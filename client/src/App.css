@@ -1,0 +1,29 @@
+@import "../src/components/Main/main.css";
+@import "../src/components/Main/home.css";
+@import "../src/components/Posts/posts.css";
+@import "../src/components/Posts/pagination.css";
+@import "../src/components/Posts/create-edit-post.css";
+@import "../src/components/Posts/post-page.css";
+@import "../src/components/Profile/profile.css";
+@import "../src/components/Authorization/login-register.css";
+
+body {
+    background: linear-gradient(-45deg, #38aad3, #43cec7);
+    background-size: 400% 400%;
+    animation: gradient 30s ease infinite;
+    height: 100vh;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}

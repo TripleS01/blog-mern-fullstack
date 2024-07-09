@@ -1,0 +1,98 @@
+form.create-post {
+    margin: 0 auto;
+    border: 2px solid rgba(255, 255, 255, 0.18);
+    padding: 10px 50px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    backdrop-filter: blur(100px);
+    box-shadow: 0px 0px 40px rgba(227, 228, 237, 0.37);
+    background-color: #f9f9f9;
+
+}
+
+form.create-post h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 0;
+}
+
+form.create-post h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #444;
+    font-weight: 600;
+    margin-bottom: 5px;
+
+}
+
+form.create-post img {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 5px;
+
+}
+
+form.create-post input,
+form.create-post textarea {
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 1rem;
+    width: 100%;
+    display: block;
+    margin-bottom: 5px;
+    padding: 7px;
+    border-radius: 10px;
+}
+
+form.create-post textarea {
+    font-size: 1rem;
+    resize: none;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+div.fileInput {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+div.fileInput input {
+    border: none;
+}
+
+input[type=file]::file-selector-button {
+    border: none;
+    background: #CADCFC;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .4s ease-in-out;
+}
+
+form.create-post input[type=file]::file-selector-button:hover {
+    background: #89ABE3;
+}
+
+form.create-post button {
+    font-size: 1rem;
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+    padding: 7px;
+    border: 0px solid #ddd;
+    background-color: #CADCFC;
+    transition: .4s ease-in-out;
+    cursor: pointer;
+}
+
+form.create-post button:hover {
+    background-color: #89ABE3;
+}

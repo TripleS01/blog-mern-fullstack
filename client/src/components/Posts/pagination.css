@@ -1,0 +1,23 @@
+.pagination {
+    gap: 7px;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    display: flex;
+    border: none;
+    border-radius: 35%;
+    padding: 7px 10px;
+}
+
+.pagination button.active {
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pagination button svg {
+    height: 17px;
+    width: 17px;
+}

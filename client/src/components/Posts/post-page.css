@@ -1,0 +1,262 @@
+div.post-page {
+    max-width: 1000px;
+    margin: auto;
+    backdrop-filter: blur(100px);
+    box-shadow: 0px 0px 10px rgba(227, 228, 237, 0.37);
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #e9e9e9;
+    min-height: 830px;
+
+}
+
+div.post-page-image {
+    display: flex;
+    justify-content: center;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+div.post-page-image img {
+    display: flex;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 5px;
+}
+
+.pp-wrap {
+    margin-top: 10px;
+    max-width: 1000px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+div.post-page h1 {
+    margin-top: 0;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+div.pp-info {
+    display: flex;
+    flex-direction: column;
+}
+
+div.post-page-time {
+    display: block;
+}
+
+
+div.created-by {
+    margin-top: 0;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+div.created-by-author {
+    font-weight: bold;
+}
+
+div.created-by-time {
+    color: #444;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+div.post-page-btns {
+    margin-top: 10px;
+    text-align: center;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+a.pp-btn {
+    display: flex;
+    padding: 7px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    align-items: center;
+    gap: 5px;
+    color: inherit;
+    transition: .4s ease-in-out;
+    right: 5px;
+}
+
+a.pp-edit {
+    background-color: #6a8fca;
+}
+
+a.pp-delete {
+    background-color: #c5545e;
+}
+
+a.pp-edit:hover {
+    background-color: #3e76d0;
+}
+
+a.pp-delete:hover {
+    background-color: #cd2634;
+}
+
+a.pp-more {
+    background-color: #f9f9f9;
+}
+
+a.pp-more:hover {
+    background-color: #b8b8b8;
+}
+
+div.post-page-summary {
+    text-align: center;
+    margin-top: 2px;
+}
+
+div.post-page-description p {
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+svg {
+    height: 20px;
+    width: 20px;
+}
+
+span.post-page-author svg {
+    width: 15px;
+    height: 15px;
+}
+
+.comments h3 {
+    text-align: center;
+    border-bottom: 1px solid #222;
+    padding-bottom: 20px;
+}
+
+.cm-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #f9f9f9;
+    width: fit-content;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+}
+
+.cm-author {
+    text-align: center;
+    align-items: center;
+    color: inherit;
+}
+
+.cm-author h4 {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.comment {
+    margin-bottom: 20px;
+}
+
+.comment h4 svg {
+    width: 15px;
+}
+
+.pp-comment {
+    font-weight: bold;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    display: inline-flex;
+    padding: 2px 4px;
+    border-radius: 5px;
+    transition: .4s ease-in-out;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pp-comment svg {
+    width: 17px;
+}
+
+.pp-delete {
+    background-color: #c5545e;
+}
+
+.pp-delete:hover {
+    background-color: #cd2634;
+}
+
+.pp-like {
+    background-color: #ddd;
+}
+
+.pp-like:hover {
+    background-color: #b8b8b8;
+}
+
+.add-cm {
+    display: flex;
+    flex-direction: column;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-cm textarea {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    resize: none;
+}
+
+.add-cm textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+.add-cm button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-weight: bold;
+    color: inherit;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: .4s ease-in-out;
+    background-color: #6a8fca;
+
+}
+
+.add-cm button:hover {
+    background-color: #3e76d0;
+}
+
+.cm-content {
+    border-top: 2px solid #e0e0e0;
+    width: fit-content;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin: 0;
+    padding: 5px 25px;
+    white-space: pre-wrap;
+}
+
+.created-at {
+    color: #444;
+    font-size: 0.8rem;
+}

@@ -1,0 +1,25 @@
+-Client -> npm run dev
+npm create vite . -- --template react
+npm install
+npm run dev
+
+npm install react-router-dom
+npm install date-fns
+
+
+
+-Api -> npm start
+npm install express
+
+npm install nodemon
+"scripts": {
+    "start": "nodemon api/index.cjs"
+  }
+npm start
+
+npm install cors
+npm install mongoose
+npm install bcrypt
+npm install jsonwebtoken
+npm install cookie-parser
+npm install multer
