@@ -23,6 +23,17 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 
 const saltRounds = 10;
 
+const isAuth = (request, response, next) => {
+    const { token } = request.cookies;
+
+    jwt.verify(token, SECRET_KEY, (error, info) => {
+        if (error) return response.status(401).json('Invalid token');
+
+        request.user = info;
+        next();
+    });
+};
+
 app.post('/register', async (request, response) => {
     const { email, username, password, repeatPassword } = request.body;
 
@@ -93,31 +104,26 @@ app.post('/logout', (request, response) => {
 
 });
 
-app.post('/posts', uploadMiddware.single('file'), async (request, response) => {
+app.post('/posts', isAuth, uploadMiddware.single('file'), async (request, response) => {
     const { originalname, path } = request.file;
     const spiltOriginalName = originalname.split('.');
     const extension = spiltOriginalName[spiltOriginalName.length - 1];
     const newPath = path + '.' + extension;
     fs.renameSync(path, newPath);
 
-    const { token } = request.cookies;
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
+    const { title, summary, description } = request.body;
 
-        const { title, summary, description } = request.body;
-        const post = await Post.create({
-            title,
-            summary,
-            description,
-            image: newPath,
-            author: info.id,
-            //take the id: user._id from the logged user
-        });
-
-        await User.findByIdAndUpdate(info.id, { $push: { posts: post._id } });
-
-        response.json(post);
+    const post = await Post.create({
+        title,
+        summary,
+        description,
+        image: newPath,
+        author: request.user.id,
     });
+
+    await User.findByIdAndUpdate(request.user.id, { $push: { posts: post._id } });
+
+    response.json(post);
 
 });
 
@@ -134,7 +140,7 @@ app.get('/posts', async (request, response) => {
     } else if (sort === 'oldest') {
         sortQuery = { createdAt: 1 };
     } else if (sort === 'likes') {
-        sortQuery = { 'likes.length': -1};
+        sortQuery = { 'likes.length': -1 };
     }
 
     const posts = await Post.find(searchQuery)
@@ -166,7 +172,7 @@ app.get('/posts/:id', async (request, response) => {
 });
 
 
-app.put('/posts', uploadMiddware.single('file'), async (request, response) => {
+app.put('/posts', isAuth, uploadMiddware.single('file'), async (request, response) => {
     let newPath = null;
 
     if (request.file) {
@@ -177,212 +183,164 @@ app.put('/posts', uploadMiddware.single('file'), async (request, response) => {
         fs.renameSync(path, newPath);
     }
 
-    const { token } = request.cookies;
+    const { id, title, summary, description } = request.body;
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
+    const post = await Post.findById(id);
+    if (!post) return response.status(404).json('Post not found');
 
-        const { id, title, summary, description } = request.body;
-        const post = await Post.findById(id);
-        if (!post) return response.status(404).json('Post not found');
+    const isAuthor = JSON.stringify(post.author) === JSON.stringify(request.user.id);
+    if (!isAuthor) {
+        response.status(400).json('Not an author of this post!')
+        throw new Error('Not an author of this post');
+    }
 
-        const isAuthor = JSON.stringify(post.author) === JSON.stringify(info.id);
-        if (!isAuthor) {
-            response.status(400).json('Not an author of this post!')
-            throw new Error('Not an author of this post');
-        }
-
-        await post.updateOne({
-            title,
-            summary,
-            description,
-            image: newPath ? newPath : post.image,
-        });
-
-        response.json(post);
+    await post.updateOne({
+        title,
+        summary,
+        description,
+        image: newPath ? newPath : post.image,
     });
+
+    response.json(post);
 
 });
 
-app.delete('/posts/:id', async (request, response) => {
+app.delete('/posts/:id', isAuth, async (request, response) => {
     const { id } = request.params;
-    const { token } = request.cookies;
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
+    const post = await Post.findById(id);
+    if (!post) return response.status(404).json('Post not found');
 
-        const post = await Post.findById(id);
-        if (!post) return response.status(404).json('Post not found');
+    const isAuthor = JSON.stringify(post.author) === JSON.stringify(request.user.id);
+    if (!isAuthor) {
+        response.status(400).json('Not an author of this post!')
+        throw new Error('Not an author of this post');
+    }
 
-        const isAuthor = JSON.stringify(post.author) === JSON.stringify(info.id);
-        if (!isAuthor) {
-            response.status(400).json('Not an author of this post!')
-            throw new Error('Not an author of this post');
-        }
+    await post.deleteOne();
 
-        await post.deleteOne();
+    await User.findByIdAndUpdate(request.user.id, { $pull: { posts: id } });
 
-        await User.findByIdAndUpdate(info.id, { $pull: { posts: id } });
-
-        response.json('Post deleted');
-    });
+    response.json('Post deleted');
 
 });
 
 app.post('/posts/:id/like', async (request, response) => {
     const { id } = request.params;
-    const { token } = request.cookies;
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
+    const post = await Post.findById(id);
+    if (!post) return response.status(404).json('Post not found');
 
-        const post = await Post.findById(id);
-        if (!post) return response.status(404).json('Post not found');
+    const liked = post.likes.includes(request.user.id);
+    if (liked) {
+        post.likes.pull(request.user.id);
+    } else {
+        post.likes.push(request.user.id);
+    }
 
-        const liked = post.likes.includes(info.id);
-        if (liked) {
-            post.likes.pull(info.id);
-        } else {
-            post.likes.push(info.id);
-        }
+    await post.save();
 
-        await post.save();
+    const update = await Post.findById(id)
+        .populate('author', ['username'])
+        .populate('comments.author', ['username']);
 
-        const update = await Post.findById(id)
-            .populate('author', ['username'])
-            .populate('comments.author', ['username']);
-
-        response.json(update);
-    });
+    response.json(update);
 
 });
 
-app.post('/posts/:id/comment', async (request, response) => {
+app.post('/posts/:id/comment', isAuth, async (request, response) => {
     const { id } = request.params;
     const { content } = request.body;
-    const { token } = request.cookies;
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
+    const post = await Post.findById(id);
+    if (!post) return response.status(404).json('Post not found');
 
-        const post = await Post.findById(id);
-        if (!post) return response.status(404).json('Post not found');
+    const comment = {
+        author: request.user.id,
+        content,
+    };
 
-        const comment = {
-            author: info.id,
-            content,
-        };
+    post.comments.push(comment);
+    await post.save();
 
-        post.comments.push(comment);
-        await post.save();
+    const updated = await Post.findById(post._id)
+        .populate('author', ['username'])
+        .populate('comments.author', ['username']);
 
-        const updated = await Post.findById(post._id)
-            .populate('author', ['username'])
-            .populate('comments.author', ['username']);
-
-        response.json(updated);
-    });
+    response.json(updated);
 
 });
 
 app.delete('/posts/:id/comment/:commentId', async (request, response) => {
     const { id, commentId } = request.params;
-    const { token } = request.cookies;
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
+    const post = await Post.findById(id);
+    if (!post) return response.status(404).json('Post not found');
 
-        const post = await Post.findById(id);
-        if (!post) return response.status(404).json('Post not found');
+    const comment = post.comments.id(commentId);
+    if (!comment) return response.status(404).json('Comment not found');
 
-        const comment = post.comments.id(commentId);
-        if (!comment) return response.status(404).json('Comment not found');
+    if (comment.author.toString() !== request.user.id && post.author.toString() !== request.user.id) {
+        return response.status(403).json('Unauthorized');
+    }
 
-        if (comment.author.toString() !== info.id && post.author.toString() !== info.id) {
-            return response.status(403).json('Unauthorized');
-        }
+    post.comments.pull(comment);
+    await post.save();
 
-        post.comments.pull(comment);
-        await post.save();
+    const updated = await Post.findById(id)
+        .populate('author', ['username'])
+        .populate('comments.author', ['username']);
 
-        const updated = await Post.findById(id)
-            .populate('author', ['username'])
-            .populate('comments.author', ['username']);
-
-        response.json(updated);
-    });
+    response.json(updated);
 
 });
 
 app.post('/posts/:id/comment/:commentId/like', async (request, response) => {
     const { id, commentId } = request.params;
-    const { token } = request.cookies;
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
+    const post = await Post.findById(id);
+    if (!post) return response.status(404).json('Post not found');
 
-        const post = await Post.findById(id);
-        if (!post) return response.status(404).json('Post not found');
+    const comment = post.comments.id(commentId);
+    if (!comment) return response.status(404).json('Comment not found');
 
-        const comment = post.comments.id(commentId);
-        if (!comment) return response.status(404).json('Comment not found');
+    const alreadyLiked = comment.likes.includes(request.user.id);
+    if (alreadyLiked) {
+        comment.likes.pull(request.user.id);
+    } else {
+        comment.likes.push(request.user.id);
+    }
 
-        const alreadyLiked = comment.likes.includes(info.id);
-        if (alreadyLiked) {
-            comment.likes.pull(info.id);
-        } else {
-            comment.likes.push(info.id);
-        }
+    await post.save();
 
-        await post.save();
+    const updated = await Post.findById(id)
+        .populate('author', ['username'])
+        .populate('comments.author', ['username']);
 
-        const updated = await Post.findById(id)
-            .populate('author', ['username'])
-            .populate('comments.author', ['username']);
-
-        response.json(updated);
-    });
+    response.json(updated);
 
 });
 
-app.get('/profile', async (request, response) => {
-    const { token } = request.cookies;
+app.get('/profile', isAuth, async (request, response) => {
+    const user = await User.findById(request.user.id).select('-password');
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
-
-        const user = await User.findById(info.id).select('-password');
-
-        response.json(user);
-    })
+    response.json(user);
 
 });
 
 app.get('/profile/stats', async (request, response) => {
-    const { token } = request.cookies;
+    const posts = await Post.find({ author: request.user.id });
+    const totalLikes = posts.reduce((sum, post) => sum + post.likes.length, 0);
+    const totalComments = posts.reduce((sum, post) => sum + post.comments.length, 0);
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
-
-        const posts = await Post.find({ author: info.id });
-        const totalLikes = posts.reduce((sum, post) => sum + post.likes.length, 0);
-        const totalComments = posts.reduce((sum, post) => sum + post.comments.length, 0);
-
-        response.json({ totalLikes, totalComments });
-    })
+    response.json({ totalLikes, totalComments });
 
 });
 
-app.get('/profile/posts', async (request, response) => {
-    const { token } = request.cookies;
+app.get('/profile/posts', isAuth, async (request, response) => {
+    const posts = await Post.find({ author: request.user.id });
 
-    jwt.verify(token, SECRET_KEY, {}, async (error, info) => {
-        if (error) return response.status(401).json('Invalid token');
-
-        const posts = await Post.find({ author: info.id });
-
-        response.json(posts);
-    })
+    response.json(posts);
 
 });
 
