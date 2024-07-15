@@ -225,7 +225,7 @@ app.delete('/posts/:id', isAuth, async (request, response) => {
 
 });
 
-app.post('/posts/:id/like', async (request, response) => {
+app.post('/posts/:id/like', isAuth, async (request, response) => {
     const { id } = request.params;
 
     const post = await Post.findById(id);
@@ -328,7 +328,7 @@ app.get('/profile', isAuth, async (request, response) => {
 
 });
 
-app.get('/profile/stats', async (request, response) => {
+app.get('/profile/stats', isAuth, async (request, response) => {
     const posts = await Post.find({ author: request.user.id });
     const totalLikes = posts.reduce((sum, post) => sum + post.likes.length, 0);
     const totalComments = posts.reduce((sum, post) => sum + post.comments.length, 0);
