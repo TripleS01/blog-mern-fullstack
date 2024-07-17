@@ -271,7 +271,7 @@ app.post('/posts/:id/comment', isAuth, async (request, response) => {
 
 });
 
-app.delete('/posts/:id/comment/:commentId', async (request, response) => {
+app.delete('/posts/:id/comment/:commentId', isAuth, async (request, response) => {
     const { id, commentId } = request.params;
 
     const post = await Post.findById(id);
@@ -295,7 +295,7 @@ app.delete('/posts/:id/comment/:commentId', async (request, response) => {
 
 });
 
-app.post('/posts/:id/comment/:commentId/like', async (request, response) => {
+app.post('/posts/:id/comment/:commentId/like', isAuth, async (request, response) => {
     const { id, commentId } = request.params;
 
     const post = await Post.findById(id);
