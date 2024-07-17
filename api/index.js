@@ -135,9 +135,11 @@ app.get('/posts', async (request, response) => {
     let sortQuery = { createdAt: -1 };
     if (sort === 'a-z') {
         sortQuery = { title: 1 };
-    } else if (sort === 'z-a') {
-        sortQuery = { title: -1 };
-    } else if (sort === 'oldest') {
+    }
+    // else if (sort === 'z-a') {
+    //     sortQuery = { title: -1 };
+    // } 
+    else if (sort === 'oldest') {
         sortQuery = { createdAt: 1 };
     } else if (sort === 'likes') {
         sortQuery = { 'likes.length': -1 };
