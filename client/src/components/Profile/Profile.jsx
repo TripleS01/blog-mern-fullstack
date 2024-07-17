@@ -20,14 +20,12 @@ export default function Profile() {
             .then(response => response.json())
             .then(data => { setProfile(data) })
 
-        // Fetch user stats
         fetch(URL + '/profile/stats', {
             credentials: 'include',
         })
             .then(response => response.json())
             .then(data => { setStats(data) })
 
-        // Fetch user's posts
         fetch(URL + '/profile/posts', {
             credentials: 'include',
         })
