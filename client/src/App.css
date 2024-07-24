@@ -1,5 +1,6 @@
 @import "../src/components/Main/main.css";
 @import "../src/components/Main/home.css";
+@import "../src/components/Main/not-found.css";
 @import "../src/components/Posts/posts.css";
 @import "../src/components/Posts/pagination.css";
 @import "../src/components/Posts/create-edit-post.css";

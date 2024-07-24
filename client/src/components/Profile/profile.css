@@ -88,6 +88,61 @@
     border-top: 1px solid #30313d;
 }
 
+.profile-input-edit {
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    text-align: center;
+    width: 50%;
+    display: block;
+    margin-bottom: 5px;
+    padding: 6px;
+    border-radius: 10px;
+}
+
+.born {
+    width: 100%;
+}
+
+.name {
+    margin-top: 2px;
+}
+
+.sex {
+    background-color: #f9f9f9;
+}
+
+.cancel-save {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.cancel-save button {
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 7px;
+    border-radius: 10px;
+    border: 0px solid #ccc;
+    transition: .4s ease-in-out;
+}
+
+.cancel-btn {
+    background-color: #c5545e;
+}
+
+.cancel-btn:hover {
+    background-color: #cd2634;
+}
+
+.save-btn {
+    background-color: #6a8fca;
+}
+
+.save-btn:hover {
+    background-color: #3e76d0;
+}
+
+
 /** Stats */
 .statistics {
     background-color: #e9e9e9;

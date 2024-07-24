@@ -98,7 +98,7 @@ export default function PostPage() {
             <div className="post-page">
 
                 <div className="post-page-image">
-                    <img src={'http://localhost:5757' + `/${post.image}`} alt={post.title} />
+                    <img src={URL + `/${post.image}`} alt={post.title} />
                 </div>
 
                 <div className="post-page-btns">

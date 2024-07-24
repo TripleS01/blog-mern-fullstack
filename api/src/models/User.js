@@ -19,6 +19,22 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    name: {
+        type: String,
+        default: 'N/A'
+    },
+    sex: {
+        type: String,
+        default: 'N/A'
+    },
+    birthDate: {
+        type: Date,
+        default: null
+    },
+    location: {
+        type: String,
+        default: 'N/A'
+    },
     posts: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
@@ -29,4 +45,5 @@ const UserSchema = new mongoose.Schema({
 });
 
 const UserModel = mongoose.model('User', UserSchema);
+
 module.exports = UserModel;

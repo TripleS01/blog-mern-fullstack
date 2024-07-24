@@ -13,25 +13,57 @@ export default function Profile() {
     const [posts, setPosts] = useState([]);
     const { userInfo } = useContext(UserContext);
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [editableProfile, setEditableProfile] = useState({});
+
     useEffect(() => {
         fetch(URL + '/profile', {
             credentials: 'include',
         })
             .then(response => response.json())
-            .then(data => { setProfile(data) })
+            .then(data => {
+                setProfile(data);
+                setEditableProfile({
+                    name: data.name || '',
+                    sex: data.sex || '',
+                    birthDate: data.birthDate || '',
+                    location: data.location || ''
+                });
+            });
 
         fetch(URL + '/profile/stats', {
             credentials: 'include',
         })
             .then(response => response.json())
-            .then(data => { setStats(data) })
+            .then(data => { setStats(data) });
 
         fetch(URL + '/profile/posts', {
             credentials: 'include',
         })
             .then(response => response.json())
-            .then(data => { setPosts(data) })
+            .then(data => { setPosts(data) });
     }, []);
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setEditableProfile(prevState => ({ ...prevState, [name]: value }));
+    };
+
+    const handleSave = () => {
+        fetch(URL + '/profile/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(editableProfile)
+        })
+            .then(response => response.json())
+            .then(data => {
+                setProfile(data);
+                setIsEditing(false);
+            });
+    };
 
     if (!profile) {
         return <div className="loading">Loading...</div>;
@@ -44,30 +76,87 @@ export default function Profile() {
                 <div className="profile-page">
                     <div className="profile">
                         <div className="info">
-                            <Link className="profile-edit-btn pc-edit">
+                            <Link className="profile-edit-btn pc-edit" onClick={() => setIsEditing(!isEditing)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                 </svg>
+
                             </Link>
                             <img src="/img/profile.jpg" alt="Profile" />
 
                             <h1>{profile.username}</h1>
-                            <p className="profile-name">{profile.name || 'N/A'}</p>
+                            {isEditing ? (
+                                <input
+                                    className="profile-input-edit name"
+                                    type="text"
+                                    name="name"
+                                    value={editableProfile.name}
+                                    onChange={handleChange}
+                                    placeholder="Enter name"
+                                />
+                            ) : (
+                                <p className="profile-name">{profile.name || 'N/A'}</p>
+                            )}
                             <div className="profile-line info-2">
                                 <span>Sex:</span>
-                                <p>{profile.sex || 'N/A'}</p>
+                                {isEditing ? (
+                                    <select
+                                        className="profile-input-edit sex"
+                                        name="sex"
+                                        value={editableProfile.sex}
+                                        onChange={handleChange}
+                                        placeholder="Enter sex"
+                                    >
+                                        <option value="">Select sex</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                ) : (
+                                    profile.sex || 'N/A'
+                                )}
                                 <span>Born:</span>
-                                <p>{profile.birthDate || 'N/A'}</p>
+                                {isEditing ? (
+                                    <input
+                                        className="profile-input-edit born"
+                                        type="date"
+                                        name="birthDate"
+                                        value={editableProfile.birthDate}
+                                        onChange={handleChange}
+                                    />
+                                ) : (
+                                    <p>{format(new Date(profile.birthDate), 'MMM d, yyyy') || 'N/A'}</p>
+                                )}
                                 <span>Email:</span>
                                 <p>{profile.email}</p>
                             </div>
                         </div>
                         <div className="profile-line more-info">
                             <span>From: </span>
-                            <p>{profile.location || 'N/A'}</p>
+                            {isEditing ? (
+                                <input
+                                    className="profile-input-edit"
+                                    type="text"
+                                    name="location"
+                                    value={editableProfile.location}
+                                    onChange={handleChange}
+                                    placeholder="Enter location"
+                                />
+                            ) : (
+                                <p>{profile.location || 'N/A'}</p>
+                            )}
                             <span>Created:</span>
-                            <time>{format(new Date(profile.createdAt), 'MMM d, yyyy HH:mm')}</time>
+                            <time>{format(new Date(profile.createdAt), 'MMM d, yyyy')}</time>
                         </div>
+                        {isEditing && (
+                            <>
+                                <div className="cancel-save">
+
+                                    <button onClick={() => setIsEditing(!isEditing)} className="cancel-btn">Cancel</button>
+
+                                    <button onClick={handleSave} className="save-btn">Save</button>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div className="profile-stats">

@@ -64,7 +64,7 @@ export default function Posts() {
                             a-z
                         </label>
 
-                        <label>
+                        {/* <label>
                             <input
                                 type="radio"
                                 value="likes"
@@ -72,7 +72,7 @@ export default function Posts() {
                                 onChange={onSort}
                             />
                             likes
-                        </label>
+                        </label> */}
 
                         {/* <label>
 
